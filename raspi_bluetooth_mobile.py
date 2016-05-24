@@ -13,3 +13,4 @@ if targte_address is not None:
     print ("found target bluetooth device with address "), target_address
 else:
     print ("could not find target bluetooth device nearby")
+print ("I'm bloody awesome")
