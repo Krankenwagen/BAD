@@ -3,8 +3,15 @@ import time
 import uuid
 import sys
 import qrtools
+import MySQLdb
 
 count = 0
+
+# MySQL credentials
+dict = { 'host' : 'mysql.metropolia.fi',
+        'username' : 'kasperst',
+        'password' : 'sqlkaitsu',
+        'db_name' : 'kasperst' }
 
 
 def qr_code_fn(id, email, name):
@@ -15,6 +22,8 @@ def qr_code_fn(id, email, name):
     qr.make()
     im = qr.make_image()
     im.save(str(name)+ str(count) + ".png")
+    # Save to db
+    sql_insert(id, name, email)
     restart_fn()
 
 
@@ -59,11 +68,87 @@ def launch_fn():
     else:
         print ("If you would like to look at the available options please type help")
         launch_fn()
-        
-        
-    
-    
+
+# Database functions
+def sql_create():
+    create_tables = """CREATE TABLE QRCODES (
+        ID INT NOT NULL AUTO_INCREMENT,
+        QR_ID CHAR(32) NOT NULL,
+        NAME CHAR(50) NOT NULL,
+        EMAIL CHAR(30) NOT NULL,
+        PRIMARY KEY (ID)"""
+
+    try:
+        db = MySQLdb.connect(dict['host'], dict['username'], dict['password'], dict['db_name'])
+        cursor = db.cursor()
+        cursor.execute("DROP TABLE IF EXISTS QRCODES")
+        cursor.execute(create_tables)
+    except:
+        print "Error: unable to create db tables"
+        db.rollback()
+    db.close()
+
+
+def sql_insert(id, name, email):
+    insert_values = """INSERT INTO QRCODES(QR_ID, NAME, EMAIL)
+        VALUES ('%s', '%s', '%s')""" % (id, name, email)
+
+    try:
+        db = MySQLdb.connect(dict['host'], dict['username'], dict['password'], dict['db_name'])
+        cursor = db.cursor()
+        cursor.execute(insert_values)
+        db.commit()
+    except:
+        print "Error: unable to insert in db"
+        db.rollback()
+    db.close()
+
+def sql_update(id, name, email):
+    update_data = """UPDATE QRCODES SET NAME = '%s', EMAIL = '%s'
+        WHERE QR_ID = '%s'""" % (name, email, id)
+
+    try:
+        db = MySQLdb.connect(dict['host'], dict['username'], dict['password'], dict['db_name'])
+        cursor = db.cursor()
+        cursor.execute(update_data)
+        db.commit()
+    except:
+        print "Error: unable to update in db"
+        db.rollback()
+    db.close()
+
+def sql_delete(id):
+    delete_data = "DELETE FROM QRCODES WHERE QR_ID = '%s'" % (id)
+
+    try:
+        db = MySQLdb.connect(dict['host'], dict['username'], dict['password'], dict['db_name'])
+        cursor = db.cursor()
+        cursor.execute(delete_data)
+        db.commit()
+    except:
+        print "Error: unable to delete from db"
+        db.rollback()
+    db.close()
+
+def sql_read(id):
+    select_data = "SELECT * FROM QRCODES \
+        WHERE QR_ID = '%s'" % (id)
+
+    try:
+        db = MySQLdb.connect(dict['host'], dict['username'], dict['password'], dict['db_name'])
+        cursor = db.cursor()
+        cursor.execute(select_data)
+        # Results
+        results = cursor.fetchall()
+        for row in results:
+            name = row[2]
+            email = row[3]
+        # Return these for email
+    except:
+        print "Error: unable to read from db"
+        db.rollback()
+    db.close()
+
 
 launch_fn()
-    
-    
+
