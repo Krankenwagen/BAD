@@ -33,6 +33,7 @@ count = 0
 door_locked = True
 admin_email = 'mail@example.com'
 smtpObj = smtplib.SMTP(host, port, local_hostname) # SMTP object
+# Should we make Pi as SMTP server?
 
 # MySQL credentials
 dict = { 'host' : 'mysql.metropolia.fi',
@@ -128,6 +129,21 @@ def send_email(info):
     name = info[0]
     email = info[1]
     # Send for admin also
+    sender = 'BAD lock'
+    receivers = [admin_email, email]
+    message = """From: BAD lock
+        To: Admin, %s
+        Subject: Access notification
+
+        New access granted recently for %s""" % (email, name)
+    # Attach image to email?
+    try:
+        smtpObj.sendmail(sender, receivers, message)
+        print "Email notifications sent"
+    except SMTPException:
+        print "Error: unable to send email notifications"
+    finally:
+        smtpObj.quit() # Is this correct?
 
 # ----------------- MYSQL FUNCTIONS ------------------------------------------------
 
