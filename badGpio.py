@@ -21,8 +21,8 @@ save_path = '/home/pi/picamera/' #edit this
 while True:
 	GPIO.output(ledPin, GPIO.LOW)
 	if(GPIO.input(switchPin)):
-		print "Button pressed, three (3) sec to take photo"
 		GPIO.output(ledPin, GPIO.HIGH)
+		print "Button pressed, three (3) sec to take photo"
 		time.sleep(3)
 		camera.capture(save_path + 'img{timestamp:%Y-%m-%d-%H-%M-%S}.jpg')
 		#os.system("python /home/pi/run.py") # Run another script
