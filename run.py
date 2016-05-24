@@ -42,27 +42,39 @@ def restart_fn():
     if restart_prompt == "yes" or restart_prompt == "y":
         launch_fn()
 
-    elif restart_prompt =="n" or restart_prompt == "no":
+    elif restart_prompt =="no" or restart_prompt == "n":
         sys.exit("Closing....")
     else:
         restart_fn()
 
 
 def launch_fn():
+    sql_create()
     print("Welcome to BAD industries, what action would you like to take?").lower()
     user_prompt = raw_input("-> ")
     if user_prompt == "generate" or user_prompt == "gen" or user_prompt == "1" or user_prompt == "create qr" or user_prompt =="g":
         purchase_code_fn()
     elif user_prompt == "decode" or user_prompt == "dec" or user_prompt =="2" or user_prompt =="decode qr" or user_prompt =="q":
         print "will run future decode function"
+        # SQL READ function associated here
+        print("exit")
+    elif user_prompt == "update database" or user_prompt == "update" or user_prompt =="3" or user_prompt =="update db" or user_prompt =="u":
+        print "will run future update function"
+        # SQL UPDATE function associated here
+        print("exit")
+    elif user_prompt == "delete data" or user_prompt == "delete" or user_prompt =="4" or user_prompt =="del" or user_prompt =="d":
+        print "will run future delete function"
+        # SQL DELETE function associated here
         print("exit")
     elif user_prompt == "help" or user_prompt =="h":
         print("You can pick from: ")
         print("1) Generate QR Code")
         print("2) Decode QR code")
-        print("3) Exit")
+        print("3) Update data")
+        print("4) Delete data")
+        print("5) Exit")
         launch_fn()
-    elif user_prompt == "exit" or user_prompt == "3" or user_prompt == "quit" or user_prompt == "e":
+    elif user_prompt == "exit" or user_prompt == "5" or user_prompt == "quit" or user_prompt == "e":
         sys.exit()
         
     else:
